@@ -3,3 +3,4 @@ finnhub-python
 requests
 jupyter
 json
+flask

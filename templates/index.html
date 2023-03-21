@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Competitors</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Company Competitors and Financial Information</h1>
+    <form id="company-form">
+        <label for="symbol">Company Symbol:</label>
+        <input type="text" id="symbol" name="symbol" required>
+        <button type="submit">Get Competitors</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+// Add event listener to form submission
+$('#company-form').submit(function(event) {
+    // Prevent default form submission behavior
+    event.preventDefault();
+
+    // Get input value
+    var symbol = $('#symbol').val();
+
+    // Make AJAX request to get company info
+    $.ajax({
+        type: "POST",
+        url: "/company_info",
+        contentType: "application/json",
+        data: JSON.stringify({'symbol': symbol}),
+        success: function(response) {
+            // Extract company info from response array
+            var company = response[0];
+
+            // Build HTML string to display company info
+            var html = "<h2>" + company.name + "</h2>";
+            if (company.sharesOutstanding !== undefined) {
+                html += "<p>Shares Outstanding: " + company.sharesOutstanding + "</p>";
+            }
+            if (company.gaapNetIncome !== undefined) {
+                html += "<p>GAAP Net Income: " + company.gaapNetIncome + "</p>";
+            }
+            if (company.EPS !== undefined) {
+                html += "<p>Earnings per Share (EPS): " + company.EPS.toFixed(2) + "</p>";
+            }
+            if (company['Period of PE'] !== undefined && company['PE Ratio'] !== undefined) {
+                html += "<p>Price-to-Earnings (PE) Ratio (" + company['Period of PE'] + "): " + company['PE Ratio'].toFixed(2) + "</p>";
+            }
+
+            // Display company info in the HTML div with id "results"
+            $('#results').html(html);
+        }
+    });
+});
+    </script>
+</body>
+</html>
